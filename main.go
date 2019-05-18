@@ -8,7 +8,6 @@ import (
 func main() {
 
 	address, port := "localhost", "8080"
-
 	hashServer, shutdown := hasher.NewHashServer(address, port)
 
 	// Run HashServer in the background

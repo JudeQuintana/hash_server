@@ -176,7 +176,7 @@ func (hs *HashServer) ListenAndServe() error {
 // addressPort string (from user input) which allows us to call ListenAndServe
 // on it.
 // Return our new HashServer with our shutdown channel to the caller (usually main)
-func NewHashServer(address string, port string) (*HashServer, chan struct{}) {
+func NewHashServer(address string, port string) (*HashServer, <-chan struct{}) {
 	addressPort := address + ":" + port
 	shutdown := make(chan struct{})
 
