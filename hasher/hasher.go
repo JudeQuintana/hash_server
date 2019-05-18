@@ -16,7 +16,6 @@ func GenerateHash(s string) string {
 	return base64Str
 }
 
-// HashStats
 // HashStats is used to store caclulated total and average stats
 // according to the state of Hasher's internal stats slice
 // only used for json marshalling
