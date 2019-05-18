@@ -175,7 +175,7 @@ func (hs *HashServer) ListenAndServe() error {
 // Store newMuxServer in a new http.Server as its handler along with constructed
 // addressPort string (from user input) which allows us to call ListenAndServe
 // on it.
-// Return our new HashServer with our shutdown channel to the caller (usually main)
+// Return our new HashServer with our receive only  shutdown channel to the caller (usually main)
 func NewHashServer(address string, port string) (*HashServer, <-chan struct{}) {
 	addressPort := address + ":" + port
 	shutdown := make(chan struct{})
