@@ -16,7 +16,9 @@
 ```
 ## Less Spazmatic, Moar Idiomatic
 
-This is my attempt at learning idomatic Golang by building a fully tested, basic hashing function/service, using ONLY the standard library.  My biggest challenges were understanding slices, channels, goroutines, concurrency with shared variables and testing. Hash Server is able to process multiple connections simultaneously.
+This is my attempt at learning idomatic Golang by building a fully tested, basic hashing function/service, using ONLY the standard library.  My biggest challenges were understanding slices, channels, goroutines, concurrency with shared variables and testing.
+
+Hash Server is able to process multiple connections concurrently.
 
 Run Server: `go run main.go`
 
