@@ -17,12 +17,16 @@ const (
 	delaySeconds = 5 * time.Second
 )
 
+// Compile the regex at package level
+var (
+	parseUrlRe = regexp.MustCompile("^/\\w+/(\\d+)$")
+)
+
 // ParseURLId
 // Use regex to parse the id from "/hash/:id" properly
 // and convert it to an int
 func ParseUrlId(path string) (int, error) {
-	re := regexp.MustCompile("^/\\w+/(\\d+)$")
-	match := re.FindStringSubmatch(path)
+	match := parseUrlRe.FindStringSubmatch(path)
 
 	if len(match) < 2 {
 		return 0, fmt.Errorf("id not found")
@@ -175,7 +179,7 @@ func (hs *HashServer) ListenAndServe() error {
 // Store newMuxServer in a new http.Server as its handler along with constructed
 // addressPort string (from user input) which allows us to call ListenAndServe
 // on it.
-// Return our new HashServer with our receive only  shutdown channel to the caller (usually main)
+// Return our new HashServer with our receive only shutdown channel to the caller (usually main)
 func NewHashServer(address string, port string) (*HashServer, <-chan struct{}) {
 	addressPort := address + ":" + port
 	shutdown := make(chan struct{})

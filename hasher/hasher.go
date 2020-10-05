@@ -30,7 +30,7 @@ type HashStats struct {
 // on read.
 // Use HashStats to set calculated stats and json marshalling
 type Hasher struct {
-	mu        *sync.RWMutex
+	mu        sync.RWMutex
 	idCounter int
 	hashes    map[int]string
 	stats     []time.Duration
@@ -102,7 +102,7 @@ func (h *Hasher) GenerateStats() HashStats {
 // life begins explicitly on allocation
 func NewHasher() *Hasher {
 	return &Hasher{
-		mu:        &sync.RWMutex{},
+		mu:        sync.RWMutex{},
 		idCounter: 0,
 		hashes:    map[int]string{},
 		stats:     []time.Duration{},
