@@ -40,6 +40,7 @@ type Hasher struct {
 func (h *Hasher) NextId() int {
 	h.mu.Lock()
 	defer h.mu.Unlock()
+
 	h.idCounter++
 	return h.idCounter
 }

@@ -60,38 +60,39 @@ type HashServer struct {
 // in the background
 func (hs *HashServer) PostHashHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodPost {
-			timeNow := time.Now()
-
-			r.ParseForm()
-
-			// here password is a string slice
-			password, ok := r.PostForm["password"]
-
-			if !ok {
-				http.Error(w, "password parameter is required", http.StatusBadRequest)
-				return
-			}
-
-			id := hs.hasher.NextId()
-			fmt.Fprintf(w, "%d", id)
-
-			// waitGroup.Add must be called before the goroutine starts
-			// to guarantee that Add happends before the goroutine that
-			// calls waitGroup.Wait (when the http.func from GetShudwonHandler())
-			// is invoked
-			hs.waitGroup.Add(1)
-
-			// generate hash from password parameter in the background with 5 sec delay
-			go func() {
-				defer hs.waitGroup.Done()
-				log.Printf("id: %d, received password, waiting %s to generate hash\n", id, delaySeconds.String())
-				time.Sleep(delaySeconds)
-				hs.hasher.Add(id, password[0], timeNow)
-			}()
-		} else {
+		if r.Method != http.MethodPost {
 			http.Error(w, "POST method is required", http.StatusMethodNotAllowed)
+			return
 		}
+
+		timeNow := time.Now()
+
+		r.ParseForm()
+
+		// here password is a string slice
+		password, ok := r.PostForm["password"]
+
+		if !ok {
+			http.Error(w, "password parameter is required", http.StatusBadRequest)
+			return
+		}
+
+		id := hs.hasher.NextId()
+		fmt.Fprintf(w, "%d", id)
+
+		// waitGroup.Add must be called before the goroutine starts
+		// to guarantee that Add happends before the goroutine that
+		// calls waitGroup.Wait when the http.func from GetShudwonHandler()
+		// is invoked
+		hs.waitGroup.Add(1)
+
+		// generate hash from password parameter in the background with 5 sec delay
+		go func() {
+			defer hs.waitGroup.Done()
+			log.Printf("id: %d, received password, waiting %s to generate hash\n", id, delaySeconds.String())
+			time.Sleep(delaySeconds)
+			hs.hasher.Add(id, password[0], timeNow)
+		}()
 	}
 }
 
@@ -100,25 +101,26 @@ func (hs *HashServer) PostHashHandler() http.HandlerFunc {
 // parsed from the url path and convert to int for hash lookup
 func (hs *HashServer) GetHashHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodGet {
-			id, err := ParseUrlId(r.URL.Path)
-
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusNotFound)
-				return
-			}
-
-			hash, err := hs.hasher.Get(id)
-
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusNotFound)
-				return
-			}
-
-			fmt.Fprintf(w, "%s", hash)
-		} else {
+		if r.Method != http.MethodGet {
 			http.Error(w, "GET method is required", http.StatusMethodNotAllowed)
+			return
 		}
+
+		id, err := ParseUrlId(r.URL.Path)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+
+		hash, err := hs.hasher.Get(id)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+
+		fmt.Fprintf(w, "%s", hash)
 	}
 }
 
@@ -127,12 +129,13 @@ func (hs *HashServer) GetHashHandler() http.HandlerFunc {
 // current stats on the fly and returning json
 func (hs *HashServer) GetStatsHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodGet {
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(hs.hasher.GenerateStats())
-		} else {
+		if r.Method != http.MethodGet {
 			http.Error(w, "GET method is required", http.StatusMethodNotAllowed)
+			return
 		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(hs.hasher.GenerateStats())
 	}
 }
 
@@ -145,22 +148,23 @@ func (hs *HashServer) GetStatsHandler() http.HandlerFunc {
 // HashServer (usually a main thread) will terminate
 func (hs *HashServer) GetShutdownHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodGet {
-			go func() {
-				log.Println("Received Shutdown!, stop accepting new connections")
-				err := hs.server.Shutdown(context.Background())
-
-				if err != nil {
-					log.Printf("Error Shutting Down HTTP Server: %v", err)
-				}
-
-				log.Println("Shutting down, waiting requests to finish...")
-				hs.waitGroup.Wait()
-				close(hs.shutdown)
-			}()
-		} else {
+		if r.Method != http.MethodGet {
 			http.Error(w, "GET method is required", http.StatusMethodNotAllowed)
+			return
 		}
+
+		go func() {
+			log.Println("Received Shutdown!, stop accepting new connections")
+			err := hs.server.Shutdown(context.Background())
+
+			if err != nil {
+				log.Printf("Error Shutting Down HTTP Server: %v", err)
+			}
+
+			log.Println("Shutting down, waiting requests to finish...")
+			hs.waitGroup.Wait()
+			close(hs.shutdown)
+		}()
 	}
 }
 
