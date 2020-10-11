@@ -161,7 +161,7 @@ func (hs *HashServer) GetShutdownHandler() http.HandlerFunc {
 				log.Printf("Error Shutting Down HTTP Server: %v", err)
 			}
 
-			log.Println("Shutting down, waiting requests to finish...")
+			log.Println("Shutting down, waiting for requests to finish...")
 			hs.waitGroup.Wait()
 			close(hs.shutdown)
 		}()
