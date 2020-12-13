@@ -1,4 +1,4 @@
-# hash server
+# Hash Server 9000
 
 ```
      ____.             ________        ________
