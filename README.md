@@ -26,6 +26,9 @@ Run Queries while server is servin': `./query.sh`
 
 Run Tests: `cd hasher/`, `go test`
 
+Build Server: `go build -o hash_server`
+
+Run Server Executable: `./hash_server`
 
 #### Endpoints
 
