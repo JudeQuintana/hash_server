@@ -16,7 +16,7 @@
 ```
 ## Moar Idiomatic
 
-This is my attempt at learning idomatic Golang by building a non-persistent hashing service using only the standard library.  My biggest challenges were understanding slices, channels, goroutines, concurrency with shared variables and testing. This service is meant for learning, not for use in production.
+This is my attempt at learning idomatic Golang by building a non-persistent password hashing service using only the standard library.  My biggest challenges were understanding slices, channels, goroutines, concurrency with shared variables and testing. This service is meant for learning, not for use in production.
 
 Hash Server 9000 is able to process multiple connections simultaneously (concurrency safe).
 
